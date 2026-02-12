@@ -26,7 +26,6 @@ async def status_task(status_bot):
 class dev(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.counter = 0
 
     async def cog_unload(self) -> None:
         return await super().cog_unload()
