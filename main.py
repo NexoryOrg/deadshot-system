@@ -36,8 +36,9 @@ class MainDatei(commands.Bot):
         loop = asyncio.get_event_loop()
         self.pool = await aiomysql.create_pool(host=host, port=3306, user=user, password=passwort, db=db_name, loop=loop, autocommit=True)
 
-        #async with pool.acquire() as conn:
-        #    async with conn.cursor() as cur:
+        async with self.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute("CREATE TABLE IF NOT EXISTS nexory_tasks(guildID BIGINT, title TEXT, des LONGTEXT, date DATE)")
         #        await cur.execute("CREATE TABLE IF NOT EXISTS nexory_setup(guildID BIGINT, server_log BIGINT, user_log BIGINT, prefix TEXT)")
 
     async def on_ready(self):

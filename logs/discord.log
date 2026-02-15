@@ -1,1 +1,535 @@
+[2026-02-15 20-26-45] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 9dd1da553dec31ea34e9278e8d6082f7).
+[2026-02-15 20-26-45] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 9dd1da553dec31ea34e9278e8d6082f7).
+[2026-02-15 20-27-12] [INFO    ] discord: Es wurden 2 Befehle synchronisiert. | Ausgeführt von icefreestyler.luca
+[2026-02-15 20-27-12] [INFO    ] discord: Es wurden 2 Befehle synchronisiert. | Ausgeführt von icefreestyler.luca
+[2026-02-15 20-27-19] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
 
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-27-19] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-30-46] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command reload
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 962, in _load_from_module_spec
+    spec.loader.exec_module(lib)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 994, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/workspaces/Nexory/datein/tasks.py", line 91, in <module>
+    class tasks(commands.Cog):
+  File "/workspaces/Nexory/datein/tasks.py", line 101, in tasks
+    @app_commands.group(name="tasks", description="Command Group to create Tasks", guild_only=True)
+     ^^^^^^^^^^^^^^^^^^
+AttributeError: module 'discord.app_commands' has no attribute 'group'. Did you mean: 'Group'?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspaces/Nexory/datein/developer.py", line 56, in reload
+    await self.bot.reload_extension(f"datein.{datei_name}")
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1144, in reload_extension
+    await self.load_extension(name)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1040, in load_extension
+    await self._load_from_module_spec(spec, name)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 965, in _load_from_module_spec
+    raise errors.ExtensionFailed(key, e) from e
+discord.ext.commands.errors.ExtensionFailed: Extension 'datein.tasks' raised an error: AttributeError: module 'discord.app_commands' has no attribute 'group'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 59, in reload
+    await self.bot.load_extension(f"datein.{datei_name}")
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1034, in load_extension
+    raise errors.ExtensionAlreadyLoaded(name)
+discord.ext.commands.errors.ExtensionAlreadyLoaded: Extension 'datein.tasks' is already loaded.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: ExtensionAlreadyLoaded: Extension 'datein.tasks' is already loaded.
+[2026-02-15 20-30-46] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command reload
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 962, in _load_from_module_spec
+    spec.loader.exec_module(lib)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 994, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/workspaces/Nexory/datein/tasks.py", line 91, in <module>
+    class tasks(commands.Cog):
+  File "/workspaces/Nexory/datein/tasks.py", line 101, in tasks
+    @app_commands.group(name="tasks", description="Command Group to create Tasks", guild_only=True)
+     ^^^^^^^^^^^^^^^^^^
+AttributeError: module 'discord.app_commands' has no attribute 'group'. Did you mean: 'Group'?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspaces/Nexory/datein/developer.py", line 56, in reload
+    await self.bot.reload_extension(f"datein.{datei_name}")
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1144, in reload_extension
+    await self.load_extension(name)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1040, in load_extension
+    await self._load_from_module_spec(spec, name)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 965, in _load_from_module_spec
+    raise errors.ExtensionFailed(key, e) from e
+discord.ext.commands.errors.ExtensionFailed: Extension 'datein.tasks' raised an error: AttributeError: module 'discord.app_commands' has no attribute 'group'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 59, in reload
+    await self.bot.load_extension(f"datein.{datei_name}")
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1034, in load_extension
+    raise errors.ExtensionAlreadyLoaded(name)
+discord.ext.commands.errors.ExtensionAlreadyLoaded: Extension 'datein.tasks' is already loaded.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: ExtensionAlreadyLoaded: Extension 'datein.tasks' is already loaded.
+[2026-02-15 20-30-46] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command reload
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 962, in _load_from_module_spec
+    spec.loader.exec_module(lib)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 994, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/workspaces/Nexory/datein/tasks.py", line 91, in <module>
+    class tasks(commands.Cog):
+  File "/workspaces/Nexory/datein/tasks.py", line 101, in tasks
+    @app_commands.group(name="tasks", description="Command Group to create Tasks", guild_only=True)
+     ^^^^^^^^^^^^^^^^^^
+AttributeError: module 'discord.app_commands' has no attribute 'group'. Did you mean: 'Group'?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspaces/Nexory/datein/developer.py", line 56, in reload
+    await self.bot.reload_extension(f"datein.{datei_name}")
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1144, in reload_extension
+    await self.load_extension(name)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1040, in load_extension
+    await self._load_from_module_spec(spec, name)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 965, in _load_from_module_spec
+    raise errors.ExtensionFailed(key, e) from e
+discord.ext.commands.errors.ExtensionFailed: Extension 'datein.tasks' raised an error: AttributeError: module 'discord.app_commands' has no attribute 'group'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 59, in reload
+    await self.bot.load_extension(f"datein.{datei_name}")
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1034, in load_extension
+    raise errors.ExtensionAlreadyLoaded(name)
+discord.ext.commands.errors.ExtensionAlreadyLoaded: Extension 'datein.tasks' is already loaded.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: ExtensionAlreadyLoaded: Extension 'datein.tasks' is already loaded.
+[2026-02-15 20-31-48] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 0c729d9fab2f067fa381f81328da1af7).
+[2026-02-15 20-31-48] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 0c729d9fab2f067fa381f81328da1af7).
+[2026-02-15 20-31-52] [INFO    ] discord: Es wurden 2 Befehle synchronisiert. | Ausgeführt von icefreestyler.luca
+[2026-02-15 20-31-52] [INFO    ] discord: Es wurden 2 Befehle synchronisiert. | Ausgeführt von icefreestyler.luca
+[2026-02-15 20-31-56] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-31-56] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-32-47] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-32-47] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-32-47] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-33-41] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-33-41] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-33-41] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-33-41] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-35-10] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-35-10] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-35-10] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-35-10] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-35-10] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-38-29] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-38-29] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-38-29] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-38-29] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-38-29] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-38-29] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-39-03] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-03] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-03] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-03] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-03] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-03] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-05] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-05] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-05] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-05] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-05] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-39-05] [ERROR   ] discord.ext.commands.bot: Ignoring exception in command sync
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 266, in wrapped
+    ret = await coro(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/developer.py", line 48, in sync
+    status_task.start(self.bot)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 407, in start
+    raise RuntimeError('Task is already launched and is not completed.')
+RuntimeError: Task is already launched and is not completed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1376, in invoke
+    await ctx.command.invoke(ctx)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 1064, in invoke
+    await injected(*ctx.args, **ctx.kwargs)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
+    raise CommandInvokeError(exc) from exc
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: RuntimeError: Task is already launched and is not completed.
+[2026-02-15 20-44-07] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 1e60c3c4fa72470a8859fded2460b4ce).
+[2026-02-15 20-44-07] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 1e60c3c4fa72470a8859fded2460b4ce).
+[2026-02-15 20-44-13] [INFO    ] discord: Es wurden 2 Befehle synchronisiert. | Ausgeführt von icefreestyler.luca
+[2026-02-15 20-44-13] [INFO    ] discord: Es wurden 2 Befehle synchronisiert. | Ausgeführt von icefreestyler.luca
+[2026-02-15 20-45-17] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-45-17] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-15 20-45-17] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
