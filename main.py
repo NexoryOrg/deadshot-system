@@ -12,11 +12,10 @@ user = os.getenv("USER")
 passwort = os.getenv("PASSWORT")
 db_name = os.getenv("DB_NAME")
 
+
 class MainDatei(commands.Bot):
 
     def __init__(self):
-
-        self.initial_extensions = None
         intents = discord.Intents.default()
         intents.message_content = True
         intents.members = True
@@ -24,25 +23,47 @@ class MainDatei(commands.Bot):
         intents.presences = True
         super().__init__(command_prefix="!", intents=intents)
 
-
     async def setup_hook(self):
         geladene_cogs = 0
-        for filename in os.listdir("datein"):
-            if filename.endswith(".py"):
-                geladene_cogs += 1
-                await self.load_extension(f"datein.{filename[:-3]}")
-        print(f"Erfolgreich geladen wurden {geladene_cogs} Datein.")
+        cog_files = [f for f in os.listdir("datein") if f.endswith(".py")]
+        print(f"Gefundene Cogs: {len(cog_files)}")
+        for filename in cog_files:
+            await self.load_extension(f"datein.{filename[:-3]}")
+            geladene_cogs += 1
+            print(f"Cog geladen: {filename} ({geladene_cogs}/{len(cog_files)})")
 
-        loop = asyncio.get_event_loop()
-        self.pool = await aiomysql.create_pool(host=host, port=3306, user=user, password=passwort, db=db_name, loop=loop, autocommit=True)
+        print("Verbindung zur Datenbank wird aufgebaut...")
+        try:
+            self.pool = await aiomysql.create_pool(
+                host=host,
+                port=3306,
+                user=user,
+                password=passwort,
+                db=db_name,
+                autocommit=True
+            )
+            print("✅ Datenbank verbunden!")
+        except Exception as e:
+            print(f"❌ Fehler bei der Datenbankverbindung: {e}")
+            return
 
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
-                await cur.execute("CREATE TABLE IF NOT EXISTS nexory_tasks(guildID BIGINT, title TEXT, des LONGTEXT, date DATE)")
-        #        await cur.execute("CREATE TABLE IF NOT EXISTS nexory_setup(guildID BIGINT, server_log BIGINT, user_log BIGINT, prefix TEXT)")
+                await cur.execute(
+                    "CREATE TABLE IF NOT EXISTS nexory_user_tasks(userID BIGINT, title TEXT, des LONGTEXT, date DATE)"
+                )
+                print("Tabelle nexory_user_tasks überprüft/erstellt.")
+                await cur.execute(
+                    "CREATE TABLE IF NOT EXISTS nexory_guild_tasks(guildID BIGINT, title TEXT, des LONGTEXT, date DATE)"
+                )
+                print("Tabelle nexory_guild_tasks überprüft/erstellt.")
+                await cur.execute(
+                    "CREATE TABLE IF NOT EXISTS nexory_setup(guildID BIGINT, server_log BIGINT, user_log BIGINT, prefix TEXT)"
+                )
+                print("Tabelle nexory_setup überprüft/erstellt.")
 
     async def on_ready(self):
-        print(f"Eingeloggt als {self.user}")
+        print(f"✅ Eingeloggt als {self.user}")
 
 
 bot = MainDatei()
@@ -52,5 +73,6 @@ async def main():
     async with bot:
         await bot.start(token)
 
+
 if __name__ == "__main__":
-    done = asyncio.run(main())
+    asyncio.run(main())
