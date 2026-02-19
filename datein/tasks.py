@@ -35,7 +35,6 @@ class CreateModal(discord.ui.Modal, title="⏰ - Create Task"):
         self.timeout = 30
         self.table_type = table_type
 
-        # Inputs als Instanzattribute
         self.title_modal = discord.ui.TextInput(
             label="Task Title",
             placeholder="e.g. program a Discord bot",
@@ -52,7 +51,6 @@ class CreateModal(discord.ui.Modal, title="⏰ - Create Task"):
             max_length=10
         )
 
-        # Inputs zum Modal hinzufügen
         self.add_item(self.title_modal)
         self.add_item(self.des)
         self.add_item(self.time)
@@ -133,22 +131,30 @@ class tasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    tasks = app_commands.Group(
+        name="tasks",
+        description="Command Group to create Tasks",
+        guild_only=True
+    )
+
     #
     #User Tasks
     #
 
-    tasks_group_user = app_commands.Group(
-        name="user_tasks",
-        description="Command Group to create User Tasks",
+    user =  app_commands.Group(
+        name="user",
+        description="Subcommand Group for User Tasks",
         guild_only=True
     )
 
-    @tasks_group_user.command(name="create", description="Create a new User-Task")
+    tasks.add_command(user)
+
+    @user.command(name="create", description="Create a new User-Task")
     async def create_user(self, interaction: discord.Interaction):
         await interaction.response.send_modal(CreateModal("user"))
 
     
-    @tasks_group_user.command(name="delete", description="Delete a User-Task by its title")
+    @user.command(name="delete", description="Delete a User-Task by its title")
     async def delete_user(self, interaction: discord.Interaction, title: str):
         async with interaction.client.pool.acquire() as conn:
             async with conn.cursor() as cur:
@@ -160,7 +166,7 @@ class tasks(commands.Cog):
         await interaction.response.send_message(f"✅ - The task with the title `{title}` has been deleted.", ephemeral=True)
 
 
-    @tasks_group_user.command(name="list", description="List all User-Tasks")
+    @user.command(name="list", description="List all User-Tasks")
     async def list_guild(self, interaction: discord.Interaction):
         async with interaction.client.pool.acquire() as conn:
             async with conn.cursor() as cur:
@@ -193,18 +199,20 @@ class tasks(commands.Cog):
     #Guild Tasks
     #
 
-    tasks_group_guild = app_commands.Group(
-        name="guild_tasks",
-        description="Command Group to create Guild Tasks",
+    guild = app_commands.Group(
+        name="guild",
+        description="Subcommand Group for Guild Tasks",
         guild_only=True
     )
 
-    @tasks_group_guild.command(name="create", description="Create a new Guild-Task")
+    tasks.add_command(guild)
+
+    @guild.command(name="create", description="Create a new Guild-Task")
     async def create_guild(self, interaction: discord.Interaction):
         await interaction.response.send_modal(CreateModal("guild"))
 
     
-    @tasks_group_guild.command(name="delete", description="Delete a Guild-Task by its title")
+    @guild.command(name="delete", description="Delete a Guild-Task by its title")
     async def delete_guild(self, interaction: discord.Interaction, title: str):
         async with interaction.client.pool.acquire() as conn:
             async with conn.cursor() as cur:
@@ -216,7 +224,7 @@ class tasks(commands.Cog):
         await interaction.response.send_message(f"✅ - The task with the title `{title}` has been deleted.", ephemeral=True)
 
 
-    @tasks_group_guild.command(name="list", description="List all Guild-Tasks")
+    @guild.command(name="list", description="List all Guild-Tasks")
     async def list_guild(self, interaction: discord.Interaction):
         async with interaction.client.pool.acquire() as conn:
             async with conn.cursor() as cur:
