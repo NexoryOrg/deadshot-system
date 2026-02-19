@@ -131,8 +131,8 @@ class tasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    tasks = app_commands.Group(
-        name="tasks",
+    task = app_commands.Group(
+        name="task",
         description="Command Group to create Tasks",
         guild_only=True
     )
@@ -147,7 +147,7 @@ class tasks(commands.Cog):
         guild_only=True
     )
 
-    tasks.add_command(user)
+    task.add_command(user)
 
     @user.command(name="create", description="Create a new User-Task")
     async def create_user(self, interaction: discord.Interaction):
@@ -205,7 +205,7 @@ class tasks(commands.Cog):
         guild_only=True
     )
 
-    tasks.add_command(guild)
+    task.add_command(guild)
 
     @guild.command(name="create", description="Create a new Guild-Task")
     async def create_guild(self, interaction: discord.Interaction):
