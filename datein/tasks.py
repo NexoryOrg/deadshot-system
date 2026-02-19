@@ -165,7 +165,7 @@ class tasks(commands.Cog):
         async with interaction.client.pool.acquire() as conn:
             async with conn.cursor() as cur:
                 await cur.execute(
-                    "SELECT title, des, date FROM nexory_user_tasks WHERE guildID = %s",
+                    "SELECT title, des, date FROM nexory_user_tasks WHERE userID = %s",
                     (interaction.user.id,)
                 )
                 db_daten = await cur.fetchall()
@@ -179,14 +179,14 @@ class tasks(commands.Cog):
         )
         embed.set_author(
             name="📋 - User Tasks",
-            icon_url=interaction.guild.icon.url if interaction.guild.icon else None
+            icon_url=interaction.user.display_avatar.url
         )
 
         for title, des, date in db_daten:
             embed.add_field(name=f"Title: {title}", value=f"Description: {des}\nFinish date: {date}", inline=False)
 
         embed.set_footer(text="https://github.com/NexoryOrg")  
-        await interaction.respons.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
     #
@@ -242,7 +242,7 @@ class tasks(commands.Cog):
             embed.add_field(name=f"Title: {title}", value=f"Description: {des}\nFinish date: {date}", inline=False)
 
         embed.set_footer(text="https://github.com/NexoryOrg")  
-        await interaction.respons.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
 # Setup
