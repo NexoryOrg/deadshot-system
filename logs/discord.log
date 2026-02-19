@@ -2642,3 +2642,167 @@ Traceback (most recent call last):
   File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/commands/core.py", line 275, in wrapped
     raise CommandInvokeError(exc) from exc
 discord.ext.commands.errors.CommandInvokeError: Command raised an exception: ExtensionAlreadyLoaded: Extension 'datein.tasks' is already loaded.
+[2026-02-19 15-16-40] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 3f2d630ee5248b14e662e2c0b551eb5c).
+[2026-02-19 15-16-40] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 3f2d630ee5248b14e662e2c0b551eb5c).
+[2026-02-19 15-18-42] [INFO    ] discord: Es wurden 3 Befehle synchronisiert. | Ausgeführt von icefreestyler.luca
+[2026-02-19 15-18-42] [INFO    ] discord: Es wurden 3 Befehle synchronisiert. | Ausgeführt von icefreestyler.luca
+[2026-02-19 15-19-01] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'list'
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 858, in _do_call
+    return await self._callback(self.binding, interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/tasks.py", line 245, in list_guild
+    await interaction.respons.send_message(embed=embed)
+          ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Interaction' object has no attribute 'respons'. Did you mean: 'response'?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/tree.py", line 1297, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 884, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 877, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'list' raised an exception: AttributeError: 'Interaction' object has no attribute 'respons'
+[2026-02-19 15-19-01] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'list'
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 858, in _do_call
+    return await self._callback(self.binding, interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/tasks.py", line 245, in list_guild
+    await interaction.respons.send_message(embed=embed)
+          ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Interaction' object has no attribute 'respons'. Did you mean: 'response'?
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/tree.py", line 1297, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 884, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 877, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'list' raised an exception: AttributeError: 'Interaction' object has no attribute 'respons'
+[2026-02-19 15-19-43] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-19 15-19-43] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-19 15-19-43] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-19 15-19-57] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'list'
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 858, in _do_call
+    return await self._callback(self.binding, interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/tasks.py", line 167, in list_guild
+    await cur.execute(
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/cursors.py", line 239, in execute
+    await self._query(query)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/cursors.py", line 457, in _query
+    await conn.query(q)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 469, in query
+    await self._read_query_result(unbuffered=unbuffered)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 683, in _read_query_result
+    await result.read()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 1164, in read
+    first_packet = await self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 652, in _read_packet
+    packet.raise_for_error()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/pymysql/protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'guildID' in 'where clause'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/tree.py", line 1297, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 884, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 877, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'list' raised an exception: OperationalError: (1054, "Unknown column 'guildID' in 'where clause'")
+[2026-02-19 15-19-57] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'list'
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 858, in _do_call
+    return await self._callback(self.binding, interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/tasks.py", line 167, in list_guild
+    await cur.execute(
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/cursors.py", line 239, in execute
+    await self._query(query)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/cursors.py", line 457, in _query
+    await conn.query(q)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 469, in query
+    await self._read_query_result(unbuffered=unbuffered)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 683, in _read_query_result
+    await result.read()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 1164, in read
+    first_packet = await self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 652, in _read_packet
+    packet.raise_for_error()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/pymysql/protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'guildID' in 'where clause'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/tree.py", line 1297, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 884, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 877, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'list' raised an exception: OperationalError: (1054, "Unknown column 'guildID' in 'where clause'")
+[2026-02-19 15-19-57] [ERROR   ] discord.app_commands.tree: Ignoring exception in command 'list'
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 858, in _do_call
+    return await self._callback(self.binding, interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Nexory/datein/tasks.py", line 167, in list_guild
+    await cur.execute(
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/cursors.py", line 239, in execute
+    await self._query(query)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/cursors.py", line 457, in _query
+    await conn.query(q)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 469, in query
+    await self._read_query_result(unbuffered=unbuffered)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 683, in _read_query_result
+    await result.read()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 1164, in read
+    first_packet = await self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/aiomysql/connection.py", line 652, in _read_packet
+    packet.raise_for_error()
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/pymysql/protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/pymysql/err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1054, "Unknown column 'guildID' in 'where clause'")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/tree.py", line 1297, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 884, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/app_commands/commands.py", line 877, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'list' raised an exception: OperationalError: (1054, "Unknown column 'guildID' in 'where clause'")
+[2026-02-19 15-20-50] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-19 15-20-50] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-19 15-20-50] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-19 15-20-50] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
