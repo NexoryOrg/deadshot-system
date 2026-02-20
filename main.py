@@ -34,13 +34,13 @@ class MainDatei(commands.Bot):
 
         print("Verbindung zur Datenbank wird aufgebaut...")
         try:
+            print(host, user, db_name)
             self.pool = await aiomysql.create_pool(
                 host=host,
                 port=3306,
                 user=user,
                 password=passwort,
                 db=db_name,
-                autocommit=True
             )
             print("✅ Datenbank verbunden!")
         except Exception as e:

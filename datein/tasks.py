@@ -140,73 +140,71 @@ class CreateModal(discord.ui.Modal, title="⏰ - Create Task"):
 
 
 class TaskView(discord.ui.LayoutView):
-
-    def __init__(self, table_type):
+    def __init__(self, bot, table_type: str, user_id=None, guild_id=None):
         super().__init__(timeout=None)
-        self._build()
+        self.bot = bot
         self.table_type = table_type
+        self.user_id = user_id
+        self.guild_id = guild_id
+        self.tasks = []
+
+    async def setup(self):
+        """Tasks aus DB laden und View bauen."""
+        await self.load_tasks()
+        self._build()
+
+    async def load_tasks(self):
+        async with self.bot.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                if self.table_type == "user":
+                    await cur.execute(
+                        "SELECT title FROM nexory_user_tasks WHERE userID = %s", 
+                        (self.user_id,)
+                    )
+                elif self.table_type == "guild":
+                    await cur.execute(
+                        "SELECT title FROM nexory_guild_tasks WHERE guildID = %s", 
+                        (self.guild_id,)
+                    )
+                self.tasks = await cur.fetchall()  # Liste von Tuples
 
     def _build(self):
         self.clear_items()
-
-        container = discord.ui.Container(
-            accent_color=discord.Color.dark_blue().value
-        )
+        container = discord.ui.Container(accent_color=discord.Color.dark_blue().value)
 
         # Header
-
-        container.add_item(
-                discord.ui.TextDisplay("# Manage Tasks")
-        )
-
+        container.add_item(discord.ui.TextDisplay("# Manage Tasks"))
         container.add_item(discord.ui.Separator())
 
-        # Create Section
-        create_btn = discord.ui.Button(
-            label="Create Task",
-            style=discord.ButtonStyle.secondary,
-            custom_id="create_task"
-        )
-
-        async def create_cb(interaction: discord.Interaction):
-            await interaction.response.send_modal(
-                CreateModal(self.table_type)
-            )
-
+        # Create Task
+        create_btn = discord.ui.Button(label="Create Task", style=discord.ButtonStyle.secondary)
+        async def create_cb(interaction):
+            await interaction.response.send_modal(CreateModal(self.table_type))
         create_btn.callback = create_cb
-
-        container.add_item(
-            discord.ui.TextDisplay("### Create Task")
-        )
-
+        container.add_item(discord.ui.TextDisplay("### Create Task"))
         container.add_item(discord.ui.ActionRow(create_btn))
 
-
-        # Edit Section
-        container.add_item(
-            discord.ui.TextDisplay("### Edit Task")
-        )
+        # Edit Task
+        container.add_item(discord.ui.TextDisplay("### Edit Task"))
+        if self.tasks:
+            options = [discord.SelectOption(label=t[0], value=t[0]) for t in self.tasks]
+        else:
+            options = [discord.SelectOption(label="No tasks available", value="none")]
 
         select_edit = discord.ui.Select(
             placeholder="Select a Task to edit",
-            options=[discord.SelectOption(label="No tasks available", value="none")],
+            options=options,
             custom_id="edit_task"
         )
-
         container.add_item(discord.ui.ActionRow(select_edit))
 
-
-        # Delete Section
-        container.add_item(
-            discord.ui.TextDisplay("### Delete Task")
-        )
-
+        # Delete Task
+        container.add_item(discord.ui.TextDisplay("### Delete Task"))
         select_delete = discord.ui.Select(
             placeholder="Select a Task to delete",
-            options=[discord.SelectOption(label="No tasks available", value="none")],
+            options=options,
             custom_id="delete_task"
         )
-
         container.add_item(discord.ui.ActionRow(select_delete))
 
         self.add_item(container)
@@ -225,11 +223,15 @@ class tasks(commands.Cog):
 
     @task.command(name="user", description="Create a new User-Task")
     async def create_user(self, interaction: discord.Interaction):
-        await interaction.response.send_message(view=TaskView("user"))
+        view = TaskView(self.bot, "user", user_id=interaction.user.id)
+        await view.setup()
+        await interaction.response.send_message(view=view)
 
     @task.command(name="guild", description="Create a new Guild-Task")
     async def create_guild(self, interaction: discord.Interaction):
-        await interaction.response.send_message(view=TaskView("guild"))
+        view = TaskView(self.bot, "guild", guild_id=interaction.guild.id)
+        await view.setup()
+        await interaction.response.send_message(view=view)
 
 
 async def setup(bot: commands.Bot):
