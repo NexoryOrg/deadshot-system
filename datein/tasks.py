@@ -147,9 +147,10 @@ class TaskView(discord.ui.LayoutView):
         self.user_id = user_id
         self.guild_id = guild_id
         self.tasks = []
+        self.mode = None
+        self.value = None
 
     async def setup(self):
-        """Tasks aus DB laden und View bauen."""
         await self.load_tasks()
         self._build()
 
@@ -158,56 +159,166 @@ class TaskView(discord.ui.LayoutView):
             async with conn.cursor() as cur:
                 if self.table_type == "user":
                     await cur.execute(
-                        "SELECT title FROM nexory_user_tasks WHERE userID = %s", 
+                        "SELECT title FROM nexory_user_tasks WHERE userID = %s",
                         (self.user_id,)
                     )
                 elif self.table_type == "guild":
                     await cur.execute(
-                        "SELECT title FROM nexory_guild_tasks WHERE guildID = %s", 
+                        "SELECT title FROM nexory_guild_tasks WHERE guildID = %s",
                         (self.guild_id,)
                     )
-                self.tasks = await cur.fetchall()  # Liste von Tuples
+                self.tasks = await cur.fetchall()
 
     def _build(self):
         self.clear_items()
-        container = discord.ui.Container(accent_color=discord.Color.dark_blue().value)
 
-        # Header
-        container.add_item(discord.ui.TextDisplay("# Manage Tasks"))
-        container.add_item(discord.ui.Separator())
+        if self.mode is None:
+            container = discord.ui.Container(
+                accent_color=discord.Color.dark_blue().value
+            )
 
-        # Create Task
-        create_btn = discord.ui.Button(label="Create Task", style=discord.ButtonStyle.secondary)
-        async def create_cb(interaction):
-            await interaction.response.send_modal(CreateModal(self.table_type))
-        create_btn.callback = create_cb
-        container.add_item(discord.ui.TextDisplay("### Create Task"))
-        container.add_item(discord.ui.ActionRow(create_btn))
+            container.add_item(discord.ui.TextDisplay("# Manage Tasks"))
+            container.add_item(discord.ui.Separator())
 
-        # Edit Task
-        container.add_item(discord.ui.TextDisplay("### Edit Task"))
-        if self.tasks:
-            options = [discord.SelectOption(label=t[0], value=t[0]) for t in self.tasks]
-        else:
-            options = [discord.SelectOption(label="No tasks available", value="none")]
+            # CREATE
+            create_btn = discord.ui.Button(
+                label="Create Task",
+                style=discord.ButtonStyle.secondary
+            )
 
-        select_edit = discord.ui.Select(
-            placeholder="Select a Task to edit",
-            options=options,
-            custom_id="edit_task"
-        )
-        container.add_item(discord.ui.ActionRow(select_edit))
+            async def create_cb(interaction: discord.Interaction):
+                await interaction.response.send_modal(
+                    CreateModal(self.table_type)
+                )
 
-        # Delete Task
-        container.add_item(discord.ui.TextDisplay("### Delete Task"))
-        select_delete = discord.ui.Select(
-            placeholder="Select a Task to delete",
-            options=options,
-            custom_id="delete_task"
-        )
-        container.add_item(discord.ui.ActionRow(select_delete))
+            create_btn.callback = create_cb
+
+            container.add_item(discord.ui.TextDisplay("### Create Task"))
+            container.add_item(discord.ui.ActionRow(create_btn))
+
+            # EDIT
+            container.add_item(discord.ui.TextDisplay("### Edit Task"))
+
+            if self.tasks:
+                options = [
+                    discord.SelectOption(label=t[0], value=t[0])
+                    for t in self.tasks
+                ]
+            else:
+                options = [
+                    discord.SelectOption(
+                        label="No tasks available",
+                        value="none"
+                    )
+                ]
+
+            select_edit = discord.ui.Select(
+                placeholder="Select a Task to edit",
+                options=options
+            )
+
+            async def edit_sc(interaction: discord.Interaction):
+                value = select_edit.values[0]
+
+                if value == "none":
+                    return await interaction.response.send_message(
+                        "No tasks available.",
+                        ephemeral=True
+                    )
+
+                await interaction.response.send_message(
+                    f"Edit Task: {value}",
+                    ephemeral=True
+                )
+
+            select_edit.callback = edit_sc
+            container.add_item(discord.ui.ActionRow(select_edit))
+
+            # DELETE
+            container.add_item(discord.ui.TextDisplay("### Delete Task"))
+
+            select_delete = discord.ui.Select(
+                placeholder="Select a Task to delete",
+                options=options
+            )
+
+            async def delete_sc(interaction: discord.Interaction):
+                value = select_delete.values[0]
+
+                if value == "none":
+                    return await interaction.response.send_message(
+                        "No tasks available.",
+                        ephemeral=True
+                    )
+
+                self.mode = "delete"
+                self.value = value
+                self._build()
+                await interaction.response.edit_message(view=self)
+
+            select_delete.callback = delete_sc
+            container.add_item(discord.ui.ActionRow(select_delete))
+
+        elif self.mode == "delete":
+            container = discord.ui.Container(
+                accent_color=discord.Color.red().value
+            )
+
+            container.add_item(discord.ui.TextDisplay("# Delete Task"))
+            container.add_item(discord.ui.Separator())
+            container.add_item(
+                discord.ui.TextDisplay(
+                    f"### Are you sure you want to delete the task:\n*{self.value}*"
+                )
+            )
+
+            submit_btn = discord.ui.Button(
+                label="Submit",
+                style=discord.ButtonStyle.success
+            )
+
+            cancel_btn = discord.ui.Button(
+                label="Cancel",
+                style=discord.ButtonStyle.danger
+            )
+
+            async def submit_cb(interaction: discord.Interaction):
+                await self.delete_task()
+                self.mode = None
+                self.value = None
+                await self.load_tasks()
+                self._build()
+                await interaction.response.edit_message(view=self)
+
+            async def cancel_cb(interaction: discord.Interaction):
+                self.mode = None
+                self.value = None
+                self._build()
+                await interaction.response.edit_message(view=self)
+
+            submit_btn.callback = submit_cb
+            cancel_btn.callback = cancel_cb
+
+            container.add_item(
+                discord.ui.ActionRow(submit_btn, cancel_btn)
+            )
 
         self.add_item(container)
+
+    async def delete_task(self):
+        async with self.bot.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                if self.table_type == "user":
+                    await cur.execute(
+                        "DELETE FROM nexory_user_tasks WHERE userID = %s AND title = %s",
+                        (self.user_id, self.value)
+                    )
+                elif self.table_type == "guild":
+                    await cur.execute(
+                        "DELETE FROM nexory_guild_tasks WHERE guildID = %s AND title = %s",
+                        (self.guild_id, self.value)
+                    )
+                await conn.commit()
 
 
 class tasks(commands.Cog):
