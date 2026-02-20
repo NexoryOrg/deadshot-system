@@ -14,6 +14,16 @@ handler.setFormatter(formatieren)
 logger.addHandler(handler)
 
 
+async def send_embed(ctx: commands.Context , description: str, color: discord.Color, author: str, icon_url: str, footer: str):
+    embed = discord.Embed(
+            description=description,
+            color=color,
+            timestamp=datetime.now()
+        )
+    embed.set_author(name=author, icon_url=icon_url)
+    embed.set_footer(text=footer)
+    await ctx.reply(embed=embed, mention_author=True)
+
 #Status Loop für Bot
 @tasks.loop(minutes=30)
 async def status_task(status_bot):
@@ -37,13 +47,11 @@ class dev(commands.Cog):
 
         if not only_guild:
             synced = await ctx.bot.tree.sync()
-            await ctx.author.send(f"Ich hab `{len(synced)} Befehle` erfolgreich synchronisiert.", mention_author=False)
-            await ctx.message.delete()
+            await send_embed(ctx, f"Ich hab `{len(synced)} Befehle` erfolgreich synchronisiert.", discord.Color.green(), "✅ - Loaded", ctx.author.display_avatar.url, "https://github.com/NexoryOrg")
 
         else:
             synced = await ctx.bot.tree.sync(guild=ctx.guild)
-            await ctx.author.send(f"Ich habe `{len(synced)} Befehle` erfolgreich auf {ctx.guild.name} synchronisiert.", mention_author=False)
-            await ctx.message.delete()
+            await send_embed(ctx, f"Ich hab `{len(synced)} Befehle` erfolgreich auf `{ctx.guild}` synchronisiert.", discord.Color.green(), "✅ - Loaded", ctx.author.display_avatar.url, "https://github.com/NexoryOrg")
 
         status_task.start(self.bot)
         logger.info(f"Es wurden {len(synced)} Befehle synchronisiert. | Ausgeführt von {ctx.author}")
@@ -59,13 +67,7 @@ class dev(commands.Cog):
             await self.bot.load_extension(f"datein.{datei_name}")
             logger.info(f"Loaded `{datei_name}.py` | Ausgeführt von {ctx.author}({ctx.author.id})")
         
-        embed = discord.Embed(description=f"Die Datei `{datei_name}.py` wurde erfolgreich neu geladen.",
-                              color=discord.Color.dark_blue(),
-                              timestamp=datetime.now())
-        embed.set_author(name="🔃 - Datei neu geladen", icon_url=ctx.author.display_avatar.url)
-        embed.set_footer(text="https://github.com/NexoryOrg")
-        await ctx.author.send(embed=embed, mention_author=False)
-        await ctx.message.delete()
+        await send_embed(ctx, f"Die Datei `{datei_name}.py` wurde erfolgreich neu geladen.", discord.Color.green(), "✅ - Reloaded", ctx.author.display_avatar.url, "https://github.com/NexoryOrg")
 
 
 
