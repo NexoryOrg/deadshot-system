@@ -41,11 +41,11 @@ async def send_error(interaction, error, embed_description: str,
     logger.error(f"Unbekannter Fehler aufgetreten! {error}")
 
 
-class CreateModal(discord.ui.Modal, title="⏰ - Create Task"):
-
-    def __init__(self, table_type: str):
+class CreateModal(discord.ui.Modal, title="Create Task"):
+    def __init__(self, table_type: str, view: "TaskView"):
         super().__init__()
         self.table_type = table_type
+        self.view = view
 
         self.title_modal = discord.ui.TextInput(
             label="Task Title",
@@ -107,25 +107,17 @@ class CreateModal(discord.ui.Modal, title="⏰ - Create Task"):
                         f"INSERT INTO {table_name} ({table_term}, title, des, date) VALUES (%s, %s, %s, %s)",
                         (id_value, self.title_modal.value, self.des.value, date)
                     )
-
                     await conn.commit()
 
-            embed = discord.Embed(
-                color=discord.Color.dark_blue(),
-                timestamp=datetime.now()
+            await interaction.response.send_message(
+                f"`✅` - Task **{self.title_modal.value}** created successfully.",
+                ephemeral=True
             )
 
-            embed.set_author(
-                name="✅ - Created Task",
-                icon_url=interaction.user.display_avatar.url
-            )
-
-            embed.add_field(name="Title", value=self.title_modal.value, inline=False)
-            embed.add_field(name="Description", value=self.des.value, inline=False)
-            embed.add_field(name="Finish date", value=str(date), inline=False)
-            embed.set_footer(text="https://github.com/NexoryOrg")
-
-            await interaction.response.send_message(embed=embed)
+            await self.view.load_tasks()
+            self.view._build()
+            if self.view.message:
+                await self.view.message.edit(view=self.view)
 
         except Exception as e:
             await send_error(
@@ -139,9 +131,140 @@ class CreateModal(discord.ui.Modal, title="⏰ - Create Task"):
             )
 
 
+class EditModal(discord.ui.Modal, title="Edit Task"):
+
+    def __init__(self, table_type: str, title: str, view: "TaskView"):
+        super().__init__()
+        self.table_type = table_type
+        self.original_title = title
+        self.view = view
+        self.title_value = None
+
+        self.edit_title_modal = discord.ui.TextInput(
+            label=f"Task Title (old: {title})",
+            max_length=50,
+            placeholder="Leave empty to keep the same title",
+            required=False
+        )
+
+        self.edit_des = discord.ui.TextInput(
+            label="Task Description",
+            max_length=500,
+            placeholder="Leave empty to keep the same description",
+            required=False
+        )
+
+        self.edit_time = discord.ui.TextInput(
+            label="Finish date",
+            placeholder="YYYY-MM-DD, leave empty to keep the same date",
+            max_length=10,
+            required=False
+        )
+
+        self.add_item(self.edit_title_modal)
+        self.add_item(self.edit_des)
+        self.add_item(self.edit_time)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        try:
+            async with interaction.client.pool.acquire() as conn:
+                async with conn.cursor() as cur:
+
+                    if self.table_type == "user":
+                        table_name = "nexory_user_tasks"
+                        table_term = "userID"
+                        id_value = interaction.user.id
+                    else:
+                        table_name = "nexory_guild_tasks"
+                        table_term = "guildID"
+                        id_value = interaction.guild.id
+
+                    await cur.execute(
+                        f"""SELECT title, des, date FROM {table_name}
+                        WHERE {table_term}=%s AND title=%s""",
+                        (id_value, self.original_title)
+                    )
+                    row = await cur.fetchone()
+
+                    if not row:
+                        return await interaction.response.send_message(
+                            "⛔ - Task not found.",
+                            ephemeral=True
+                        )
+
+                    old_title, old_des, old_date = row
+
+                    new_title = (
+                        self.edit_title_modal.value.strip()
+                        if self.edit_title_modal.value.strip()
+                        else old_title
+                    )
+                    new_des = (
+                        self.edit_des.value.strip()
+                        if self.edit_des.value.strip()
+                        else old_des
+                    )
+
+                    if self.edit_time.value.strip():
+                        edit_date = datetime.strptime(
+                            self.edit_time.value, "%Y-%m-%d"
+                        ).date()
+
+                        if edit_date <= datetime.now().date():
+                            return await interaction.response.send_message(
+                                "⛔ - The date must be in the future!",
+                                ephemeral=True
+                            )
+                    else:
+                        edit_date = old_date
+
+                    if new_title != old_title:
+                        self.title_value = new_title
+                        await cur.execute(
+                            f"""SELECT 1 FROM {table_name}
+                            WHERE {table_term}=%s AND title=%s""",
+                            (id_value, new_title)
+                        )
+                        if await cur.fetchone():
+                            return await interaction.response.send_message(
+                                "⛔ - A task with that title already exists.",
+                                ephemeral=True
+                            )
+
+                    self.title_value = old_title
+                    await cur.execute(
+                        f"""UPDATE {table_name}
+                        SET title=%s, des=%s, date=%s
+                        WHERE {table_term}=%s AND title=%s""",
+                        (new_title, new_des, edit_date,
+                         id_value, old_title)
+                    )
+
+                    await conn.commit()
+
+            await interaction.response.send_message(
+                f"`🔁` - Edited Task **{self.title_value}** successfully.",
+                ephemeral=True
+            )
+            await self.view.load_tasks()
+            self.view._build()
+            if self.view.message:
+                await self.view.message.edit(view=self.view)
+
+        except Exception as e:
+            await send_error(
+                interaction, e,
+                "Es ist ein unbekannter Fehler aufgetreten.",
+                discord.Color.red(),
+                interaction.user.display_avatar.url,
+                "Fehlermeldung",
+                "https://github.com/NexoryOrg"
+            )
+
+
 class TaskView(discord.ui.LayoutView):
     def __init__(self, bot, table_type: str, user_id=None, guild_id=None):
-        super().__init__(timeout=None)
+        super().__init__(timeout=300)
         self.bot = bot
         self.table_type = table_type
         self.user_id = user_id
@@ -149,6 +272,7 @@ class TaskView(discord.ui.LayoutView):
         self.tasks = []
         self.mode = None
         self.value = None
+        self.message = None
 
     async def setup(self):
         await self.load_tasks()
@@ -169,6 +293,31 @@ class TaskView(discord.ui.LayoutView):
                     )
                 self.tasks = await cur.fetchall()
 
+    async def delete_task(self):
+        async with self.bot.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+                if self.table_type == "user":
+                    await cur.execute(
+                        "DELETE FROM nexory_user_tasks WHERE userID = %s AND title = %s",
+                        (self.user_id, self.value)
+                    )
+                elif self.table_type == "guild":
+                    await cur.execute(
+                        "DELETE FROM nexory_guild_tasks WHERE guildID = %s AND title = %s",
+                        (self.guild_id, self.value)
+                    )
+                await conn.commit()
+
+    async def refresh_view(self, interaction: discord.Interaction):
+        await self.load_tasks()
+        self.mode = None
+        self.value = None
+        self._build()
+        if self.message:
+            await interaction.response.edit_message(view=self)
+        else:
+            await interaction.response.send_message(view=self, ephemeral=True)
+
     def _build(self):
         self.clear_items()
 
@@ -177,7 +326,7 @@ class TaskView(discord.ui.LayoutView):
                 accent_color=discord.Color.dark_blue().value
             )
 
-            container.add_item(discord.ui.TextDisplay("# Manage Tasks"))
+            container.add_item(discord.ui.TextDisplay(f"# Manage Tasks ({self.table_type})"))
             container.add_item(discord.ui.Separator())
 
             # CREATE
@@ -187,9 +336,8 @@ class TaskView(discord.ui.LayoutView):
             )
 
             async def create_cb(interaction: discord.Interaction):
-                await interaction.response.send_modal(
-                    CreateModal(self.table_type)
-                )
+                modal = CreateModal(self.table_type, view=self)
+                await interaction.response.send_modal(modal)
 
             create_btn.callback = create_cb
 
@@ -226,10 +374,8 @@ class TaskView(discord.ui.LayoutView):
                         ephemeral=True
                     )
 
-                await interaction.response.send_message(
-                    f"Edit Task: {value}",
-                    ephemeral=True
-                )
+                modal = EditModal(self.table_type, value, view=self)
+                await interaction.response.send_modal(modal)
 
             select_edit.callback = edit_sc
             container.add_item(discord.ui.ActionRow(select_edit))
@@ -259,6 +405,71 @@ class TaskView(discord.ui.LayoutView):
             select_delete.callback = delete_sc
             container.add_item(discord.ui.ActionRow(select_delete))
 
+            # LIST TASKS
+            container.add_item(discord.ui.TextDisplay("### Show Tasks"))
+
+            if self.tasks:
+                options_list = [
+                    discord.SelectOption(label=t[0], value=t[0])
+                    for t in self.tasks
+                ]
+            else:
+                options_list = [
+                    discord.SelectOption(label="No tasks available", value="none")
+                ]
+
+            select_list = discord.ui.Select(
+                placeholder="Select a Task to view",
+                options=options_list
+            )
+
+            async def list_sc(interaction: discord.Interaction):
+                value = select_list.values[0]
+
+                if value == "none":
+                    return await interaction.response.send_message(
+                        "No tasks available.",
+                        ephemeral=True
+                    )
+
+                async with self.bot.pool.acquire() as conn:
+                    async with conn.cursor() as cur:
+                        if self.table_type == "user":
+                            table_name = "nexory_user_tasks"
+                            table_term = "userID"
+                            id_value = self.user_id
+                        else:
+                            table_name = "nexory_guild_tasks"
+                            table_term = "guildID"
+                            id_value = self.guild_id
+
+                        await cur.execute(
+                            f"SELECT title, des, date FROM {table_name} WHERE {table_term}=%s AND title=%s",
+                            (id_value, value)
+                        )
+                        row = await cur.fetchone()
+
+                if row:
+                    title, des, date = row
+                    embed = discord.Embed(
+                        title=f"Show Task",
+                        description=f"Informations about the Task **{title}**",
+                        color=discord.Color.dark_blue(),
+                        timestamp=datetime.now()
+                    )
+                    embed.add_field(name="Description", value=des, inline=False)
+                    embed.add_field(name="Finish Date", value=date, inline=False)
+                    embed.set_footer(text="https://github.com/NexoryOrg")
+                    await interaction.response.send_message(embed=embed, ephemeral=True)
+                else:
+                    await interaction.response.send_message(
+                        "Task not found.",
+                        ephemeral=True
+                    )
+
+            select_list.callback = list_sc
+            container.add_item(discord.ui.ActionRow(select_list))
+
         elif self.mode == "delete":
             container = discord.ui.Container(
                 accent_color=discord.Color.red().value
@@ -284,17 +495,11 @@ class TaskView(discord.ui.LayoutView):
 
             async def submit_cb(interaction: discord.Interaction):
                 await self.delete_task()
-                self.mode = None
-                self.value = None
-                await self.load_tasks()
-                self._build()
-                await interaction.response.edit_message(view=self)
+                await self.refresh_view(interaction)
+                
 
             async def cancel_cb(interaction: discord.Interaction):
-                self.mode = None
-                self.value = None
-                self._build()
-                await interaction.response.edit_message(view=self)
+                await self.refresh_view(interaction)
 
             submit_btn.callback = submit_cb
             cancel_btn.callback = cancel_cb
@@ -304,21 +509,6 @@ class TaskView(discord.ui.LayoutView):
             )
 
         self.add_item(container)
-
-    async def delete_task(self):
-        async with self.bot.pool.acquire() as conn:
-            async with conn.cursor() as cur:
-                if self.table_type == "user":
-                    await cur.execute(
-                        "DELETE FROM nexory_user_tasks WHERE userID = %s AND title = %s",
-                        (self.user_id, self.value)
-                    )
-                elif self.table_type == "guild":
-                    await cur.execute(
-                        "DELETE FROM nexory_guild_tasks WHERE guildID = %s AND title = %s",
-                        (self.guild_id, self.value)
-                    )
-                await conn.commit()
 
 
 class tasks(commands.Cog):
@@ -336,13 +526,13 @@ class tasks(commands.Cog):
     async def create_user(self, interaction: discord.Interaction):
         view = TaskView(self.bot, "user", user_id=interaction.user.id)
         await view.setup()
-        await interaction.response.send_message(view=view)
+        view.message = await interaction.response.send_message(view=view)
 
     @task.command(name="guild", description="Create a new Guild-Task")
     async def create_guild(self, interaction: discord.Interaction):
         view = TaskView(self.bot, "guild", guild_id=interaction.guild.id)
         await view.setup()
-        await interaction.response.send_message(view=view)
+        view.message = await interaction.response.send_message(view=view)
 
 
 async def setup(bot: commands.Bot):
