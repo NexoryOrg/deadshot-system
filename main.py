@@ -36,33 +36,38 @@ class MainDatei(commands.Bot):
         try:
             print(host, user, db_name)
             self.pool = await aiomysql.create_pool(
-        #        host=host,
-        #        port=3306,
-        #        user=user,
-        #        password=passwort,
-        #        db=db_name,
+                host=host,
+                port=3306,
+                user=user,
+                password=passwort,
+                db=db_name,
+                minsize=1,
+                maxsize=10,
+                autocommit=True, 
+                connect_timeout=10, 
+                pool_recycle=300
             )
             print("✅ Datenbank verbunden!")
         except Exception as e:
             print(f"❌ Fehler bei der Datenbankverbindung: {e}")
             return
-
+        
+    
         async with self.pool.acquire() as conn:
+            await conn.ping(reconnect=True)
             async with conn.cursor() as cur:
-                await cur.execute("DROP TABLE IF EXISTS nexory_user_tasks")
-                await cur.execute("DROP TABLE IF EXISTS nexory_guild_tasks")
                 await cur.execute(
-                    "CREATE TABLE IF NOT EXISTS nexory_user_tasks(userID BIGINT, title TEXT, des LONGTEXT, date DATE, remindme BOOLEAN DEFASULT FALSE)"
+                    "CREATE TABLE IF NOT EXISTS nexory_user_tasks("
+                    "userID BIGINT, title VARCHAR(50), des LONGTEXT, date DATE, remindme BOOLEAN DEFAULT FALSE)"
                 )
                 print("Tabelle nexory_user_tasks überprüft/erstellt.")
+
                 await cur.execute(
-                    "CREATE TABLE IF NOT EXISTS nexory_guild_tasks(guildID BIGINT, title TEXT, des LONGTEXT, date DATE, remindme BOOLEAN DEFASULT FALSE)"
+                    "CREATE TABLE IF NOT EXISTS nexory_guild_tasks("
+                    "guildID BIGINT, title VARCHAR(50), des LONGTEXT, date DATE, remindme BOOLEAN DEFAULT FALSE)"
                 )
                 print("Tabelle nexory_guild_tasks überprüft/erstellt.")
-                await cur.execute(
-                    "CREATE TABLE IF NOT EXISTS nexory_setup(guildID BIGINT, server_log BIGINT, user_log BIGINT, prefix TEXT)"
-                )
-                print("Tabelle nexory_setup überprüft/erstellt.")
+
 
     async def on_ready(self):
         print(f"✅ Eingeloggt als {self.user}")
@@ -75,6 +80,21 @@ async def main():
     async with bot:
         await bot.start(token)
 
+@bot.command()
+@commands.is_owner()
+async def dbtest(ctx: commands.Context):
+    try:
+        async with bot.pool.acquire() as conn:
+            await conn.ping(reconnect=True)
+            async with conn.cursor() as cur:
+                await cur.execute("SELECT 1")
+                result = await cur.fetchone()
+                if result:
+                    await ctx.send("✅ Datenbankverbindung ist aktiv!")
+                else:
+                    await ctx.send("❌ Datenbankverbindung ist nicht aktiv!")
+    except Exception as e:
+        await ctx.send(f"❌ Fehler bei der Datenbankverbindung: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())

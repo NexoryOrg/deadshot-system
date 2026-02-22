@@ -80,6 +80,7 @@ class CreateModal(discord.ui.Modal, title="Create Task"):
         self.add_item(self.title_modal)
         self.add_item(self.des)
         self.add_item(self.time)
+        self.add_item(self.remindme)
 
     async def on_submit(self, interaction: discord.Interaction):
         try:
@@ -131,11 +132,6 @@ class CreateModal(discord.ui.Modal, title="Create Task"):
                 ephemeral=True
             )
 
-            await self.view.load_tasks()
-            self.view._build()
-            if self.view.message:
-                await self.view.message.edit(view=self.view)
-
         except Exception as e:
             await send_error(
                 interaction,
@@ -178,9 +174,17 @@ class EditModal(discord.ui.Modal, title="Edit Task"):
             required=False
         )
 
+        self.remindme = discord.ui.TextInput(
+            label="Remind me",
+            placeholder="Type 'no' if you don`t want to be reminded when the task is due.",
+            max_length=3,
+            required=False
+        )
+
         self.add_item(self.edit_title_modal)
         self.add_item(self.edit_des)
         self.add_item(self.edit_time)
+        self.add_item(self.remindme)
 
     async def on_submit(self, interaction: discord.Interaction):
         try:
@@ -197,7 +201,7 @@ class EditModal(discord.ui.Modal, title="Edit Task"):
                         id_value = interaction.guild.id
 
                     await cur.execute(
-                        f"""SELECT title, des, date FROM {table_name}
+                        f"""SELECT title, des, date, remindme FROM {table_name}
                         WHERE {table_term}=%s AND title=%s""",
                         (id_value, self.original_title)
                     )
@@ -209,34 +213,34 @@ class EditModal(discord.ui.Modal, title="Edit Task"):
                             ephemeral=True
                         )
 
-                    old_title, old_des, old_date = row
+                    old_title, old_des, old_date, old_remind = row
 
-                    new_title = (
-                        self.edit_title_modal.value.strip()
-                        if self.edit_title_modal.value.strip()
-                        else old_title
-                    )
-                    new_des = (
-                        self.edit_des.value.strip()
-                        if self.edit_des.value.strip()
-                        else old_des
-                    )
+                    new_title = self.edit_title_modal.value.strip() or old_title
+
+                    new_des = self.edit_des.value.strip() or old_des
 
                     if self.edit_time.value.strip():
-                        edit_date = datetime.strptime(
-                            self.edit_time.value, "%Y-%m-%d"
-                        ).date()
-
-                        if edit_date <= datetime.now().date():
+                        try:
+                            edit_date = datetime.strptime(self.edit_time.value.strip(), "%Y-%m-%d").date()
+                            if edit_date <= datetime.now().date():
+                                return await interaction.response.send_message(
+                                    "⛔ - The date must be in the future!",
+                                    ephemeral=True
+                                )
+                        except ValueError:
                             return await interaction.response.send_message(
-                                "⛔ - The date must be in the future!",
+                                "⛔ - Invalid date format! Use YYYY-MM-DD.",
                                 ephemeral=True
                             )
                     else:
                         edit_date = old_date
 
+                    if self.remindme.value.strip():
+                        new_remind = True if self.remindme.value.strip().lower() == "yes" else False
+                    else:
+                        new_remind = True if old_remind else False
+
                     if new_title != old_title:
-                        self.title_value = new_title
                         await cur.execute(
                             f"""SELECT 1 FROM {table_name}
                             WHERE {table_term}=%s AND title=%s""",
@@ -248,25 +252,20 @@ class EditModal(discord.ui.Modal, title="Edit Task"):
                                 ephemeral=True
                             )
 
-                    self.title_value = old_title
                     await cur.execute(
                         f"""UPDATE {table_name}
-                        SET title=%s, des=%s, date=%s
+                        SET title=%s, des=%s, date=%s, remindme=%s
                         WHERE {table_term}=%s AND title=%s""",
-                        (new_title, new_des, edit_date,
-                         id_value, old_title)
+                        (new_title, new_des, edit_date, new_remind, id_value, old_title)
                     )
 
                     await conn.commit()
+                    self.title_value = new_title
 
             await interaction.response.send_message(
                 f"`🔁` - Edited Task **{self.title_value}** successfully.",
                 ephemeral=True
             )
-            await self.view.load_tasks()
-            self.view._build()
-            if self.view.message:
-                await self.view.message.edit(view=self.view)
 
         except Exception as e:
             await send_error(
@@ -461,13 +460,20 @@ class TaskView(discord.ui.LayoutView):
                             id_value = self.guild_id
 
                         await cur.execute(
-                            f"SELECT title, des, date FROM {table_name} WHERE {table_term}=%s AND title=%s",
+                            f"SELECT title, des, date, remindme FROM {table_name} WHERE {table_term}=%s AND title=%s",
                             (id_value, value)
                         )
                         row = await cur.fetchone()
 
                 if row:
-                    title, des, date = row
+                    title, des, date, remind = row
+
+                    if remind == 1:
+                        remind = "Yes"
+
+                    else:
+                        remind = "No"
+
                     embed = discord.Embed(
                         title=f"Show Task",
                         description=f"Informations about the Task **{title}**",
@@ -476,6 +482,7 @@ class TaskView(discord.ui.LayoutView):
                     )
                     embed.add_field(name="Description", value=des, inline=False)
                     embed.add_field(name="Finish Date", value=date, inline=False)
+                    embed.add_field(name="Remind me", value=remind, inline=False)
                     embed.set_footer(text="https://github.com/NexoryOrg")
                     await interaction.response.send_message(embed=embed, ephemeral=True)
                 else:
@@ -551,73 +558,6 @@ class tasks(commands.Cog):
         view = TaskView(self.bot, "guild", guild_id=interaction.guild.id)
         await view.setup()
         view.message = await interaction.response.send_message(view=view)
-
-
-    @tasks.loop(minutes=1)
-    async def reminder_loop(self):
-        now = datetime.now(pytz.timezone("Europe/Berlin"))
-
-        async with self.bot.pool.acquire() as conn:
-            async with conn.cursor() as cur:
-
-                await cur.execute("""
-                    SELECT userID, title, des 
-                    FROM nexory_user_tasks
-                    WHERE date <= NOW()
-                    AND reminded = FALSE
-                """)
-                user_tasks = await cur.fetchall()
-
-                for user_id, title, des in user_tasks:
-                    user = self.bot.get_user(user_id)
-
-                    if user:
-                        try:
-                            await user.send(
-                                f"🔔 **Task Reminder**\n\n"
-                                f"**{title}**\n"
-                                f"{des}\n\n"
-                                f"📅 This task is now due!"
-                            )
-                        except:
-                            pass
-
-                    await cur.execute("""
-                        UPDATE nexory_user_tasks
-                        SET reminded = TRUE
-                        WHERE userID=%s AND title=%s
-                    """, (user_id, title))
-
-
-                await cur.execute("""
-                    SELECT guildID, title, des
-                    FROM nexory_guild_tasks
-                    WHERE date <= NOW()
-                    AND reminded = FALSE
-                """)
-                guild_tasks = await cur.fetchall()
-
-                for guild_id, title, des in guild_tasks:
-                    guild = self.bot.get_guild(guild_id)
-
-                    if guild and guild.system_channel:
-                        await guild.system_channel.send(
-                            f"🔔 **Task Reminder**\n\n"
-                            f"**{title}**\n"
-                            f"{des}\n\n"
-                            f"📅 This task is now due!"
-                        )
-
-                    await cur.execute("""
-                        UPDATE nexory_guild_tasks
-                        SET reminded = TRUE
-                        WHERE guildID=%s AND title=%s
-                    """, (guild_id, title))
-
-                await conn.commit()
-
-    @reminder_loop.before_loop
-    async def before_reminder(self):
         await self.bot.wait_until_ready()
 
 
