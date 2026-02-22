@@ -36,11 +36,11 @@ class MainDatei(commands.Bot):
         try:
             print(host, user, db_name)
             self.pool = await aiomysql.create_pool(
-                host=host,
-                port=3306,
-                user=user,
-                password=passwort,
-                db=db_name,
+        #        host=host,
+        #        port=3306,
+        #        user=user,
+        #        password=passwort,
+        #        db=db_name,
             )
             print("✅ Datenbank verbunden!")
         except Exception as e:
@@ -49,12 +49,14 @@ class MainDatei(commands.Bot):
 
         async with self.pool.acquire() as conn:
             async with conn.cursor() as cur:
+                await cur.execute("DROP TABLE IF EXISTS nexory_user_tasks")
+                await cur.execute("DROP TABLE IF EXISTS nexory_guild_tasks")
                 await cur.execute(
-                    "CREATE TABLE IF NOT EXISTS nexory_user_tasks(userID BIGINT, title TEXT, des LONGTEXT, date DATE)"
+                    "CREATE TABLE IF NOT EXISTS nexory_user_tasks(userID BIGINT, title TEXT, des LONGTEXT, date DATE, remindme BOOLEAN DEFASULT FALSE)"
                 )
                 print("Tabelle nexory_user_tasks überprüft/erstellt.")
                 await cur.execute(
-                    "CREATE TABLE IF NOT EXISTS nexory_guild_tasks(guildID BIGINT, title TEXT, des LONGTEXT, date DATE)"
+                    "CREATE TABLE IF NOT EXISTS nexory_guild_tasks(guildID BIGINT, title TEXT, des LONGTEXT, date DATE, remindme BOOLEAN DEFASULT FALSE)"
                 )
                 print("Tabelle nexory_guild_tasks überprüft/erstellt.")
                 await cur.execute(
