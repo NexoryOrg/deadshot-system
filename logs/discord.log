@@ -3560,3 +3560,41 @@ In content: The 'content' field cannot be used when using MessageFlags.IS_COMPON
 [2026-02-21 08-46-47] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
 [2026-02-21 08-46-47] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
 [2026-02-21 08-46-47] [INFO    ] discord: Realoded `tasks.py` | Ausgeführt von icefreestyler.luca(714361420409733171)
+[2026-02-22 10-53-51] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 342cd6fb9f2022532be66f9ac3c46080).
+[2026-02-22 10-53-51] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: 342cd6fb9f2022532be66f9ac3c46080).
+[2026-02-22 11-32-45] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: b0077e76ded795c4710d16d26f868b35).
+[2026-02-22 11-32-45] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: b0077e76ded795c4710d16d26f868b35).
+[2026-02-22 11-32-47] [ERROR   ] discord.ext.tasks: Unhandled exception in internal background task 'reminder_loop'.
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 246, in _loop
+    await self.coro(*args, **kwargs)
+  File "/workspaces/Nexory/datein/tasks.py", line 560, in reminder_loop
+    async with self.bot.pool.acquire() as conn:
+               ^^^^^^^^^^^^^
+AttributeError: 'MainDatei' object has no attribute 'pool'
+[2026-02-22 11-32-47] [ERROR   ] discord.ext.tasks: Unhandled exception in internal background task 'reminder_loop'.
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 246, in _loop
+    await self.coro(*args, **kwargs)
+  File "/workspaces/Nexory/datein/tasks.py", line 560, in reminder_loop
+    async with self.bot.pool.acquire() as conn:
+               ^^^^^^^^^^^^^
+AttributeError: 'MainDatei' object has no attribute 'pool'
+[2026-02-22 11-55-43] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: f25df3bf860f16e036d9f35572686e03).
+[2026-02-22 11-55-43] [INFO    ] discord.gateway: Shard ID None has connected to Gateway (Session ID: f25df3bf860f16e036d9f35572686e03).
+[2026-02-22 11-55-45] [ERROR   ] discord.ext.tasks: Unhandled exception in internal background task 'reminder_loop'.
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 246, in _loop
+    await self.coro(*args, **kwargs)
+  File "/workspaces/Nexory/datein/tasks.py", line 560, in reminder_loop
+    async with self.bot.pool.acquire() as conn:
+               ^^^^^^^^^^^^^
+AttributeError: 'MainDatei' object has no attribute 'pool'
+[2026-02-22 11-55-45] [ERROR   ] discord.ext.tasks: Unhandled exception in internal background task 'reminder_loop'.
+Traceback (most recent call last):
+  File "/usr/local/python/3.12.1/lib/python3.12/site-packages/discord/ext/tasks/__init__.py", line 246, in _loop
+    await self.coro(*args, **kwargs)
+  File "/workspaces/Nexory/datein/tasks.py", line 560, in reminder_loop
+    async with self.bot.pool.acquire() as conn:
+               ^^^^^^^^^^^^^
+AttributeError: 'MainDatei' object has no attribute 'pool'

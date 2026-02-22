@@ -1,8 +1,10 @@
 import discord
 import logging
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord import app_commands
 from datetime import datetime
+import pytz
+
 
 # Logger setup
 logger = logging.getLogger("discord")
@@ -50,20 +52,30 @@ class CreateModal(discord.ui.Modal, title="Create Task"):
         self.title_modal = discord.ui.TextInput(
             label="Task Title",
             placeholder="e.g. program a Discord bot",
-            max_length=50
+            max_length=50,
+            required=True
         )
 
         self.des = discord.ui.TextInput(
             label="Task Description",
             placeholder="e.g. programm a Discord bot für NexoryOrg (moderation and logging)",
-            max_length=500
+            max_length=500,
+            required=True
         )
 
         self.time = discord.ui.TextInput(
             label="Finish date",
             placeholder="YYYY-MM-DD",
-            max_length=10
+            max_length=10,
+            required=True
         )
+
+        self.remindme = discord.ui.TextInput(
+            label="Remind me",
+            placeholder="Type 'yes' if you want to be reminded when the task is due.",
+            max_length=3,
+            required=False
+            )
 
         self.add_item(self.title_modal)
         self.add_item(self.des)
@@ -103,9 +115,14 @@ class CreateModal(discord.ui.Modal, title="Create Task"):
                             ephemeral=True
                         )
 
+                    if self.remindme.value.lower() == "yes":
+                        self.remindme = True
+                    else:
+                        self.remindme = False
+
                     await cur.execute(
-                        f"INSERT INTO {table_name} ({table_term}, title, des, date) VALUES (%s, %s, %s, %s)",
-                        (id_value, self.title_modal.value, self.des.value, date)
+                        f"INSERT INTO {table_name} ({table_term}, title, des, date, remindme) VALUES (%s, %s, %s, %s, %s)",
+                        (id_value, self.title_modal.value, self.des.value, date, self.remindme)
                     )
                     await conn.commit()
 
@@ -515,6 +532,7 @@ class tasks(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.reminder_loop.start()
 
     task = app_commands.Group(
         name="task",
@@ -533,6 +551,74 @@ class tasks(commands.Cog):
         view = TaskView(self.bot, "guild", guild_id=interaction.guild.id)
         await view.setup()
         view.message = await interaction.response.send_message(view=view)
+
+
+    @tasks.loop(minutes=1)
+    async def reminder_loop(self):
+        now = datetime.now(pytz.timezone("Europe/Berlin"))
+
+        async with self.bot.pool.acquire() as conn:
+            async with conn.cursor() as cur:
+
+                await cur.execute("""
+                    SELECT userID, title, des 
+                    FROM nexory_user_tasks
+                    WHERE date <= NOW()
+                    AND reminded = FALSE
+                """)
+                user_tasks = await cur.fetchall()
+
+                for user_id, title, des in user_tasks:
+                    user = self.bot.get_user(user_id)
+
+                    if user:
+                        try:
+                            await user.send(
+                                f"🔔 **Task Reminder**\n\n"
+                                f"**{title}**\n"
+                                f"{des}\n\n"
+                                f"📅 This task is now due!"
+                            )
+                        except:
+                            pass
+
+                    await cur.execute("""
+                        UPDATE nexory_user_tasks
+                        SET reminded = TRUE
+                        WHERE userID=%s AND title=%s
+                    """, (user_id, title))
+
+
+                await cur.execute("""
+                    SELECT guildID, title, des
+                    FROM nexory_guild_tasks
+                    WHERE date <= NOW()
+                    AND reminded = FALSE
+                """)
+                guild_tasks = await cur.fetchall()
+
+                for guild_id, title, des in guild_tasks:
+                    guild = self.bot.get_guild(guild_id)
+
+                    if guild and guild.system_channel:
+                        await guild.system_channel.send(
+                            f"🔔 **Task Reminder**\n\n"
+                            f"**{title}**\n"
+                            f"{des}\n\n"
+                            f"📅 This task is now due!"
+                        )
+
+                    await cur.execute("""
+                        UPDATE nexory_guild_tasks
+                        SET reminded = TRUE
+                        WHERE guildID=%s AND title=%s
+                    """, (guild_id, title))
+
+                await conn.commit()
+
+    @reminder_loop.before_loop
+    async def before_reminder(self):
+        await self.bot.wait_until_ready()
 
 
 async def setup(bot: commands.Bot):
