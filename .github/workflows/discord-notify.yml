@@ -1,0 +1,38 @@
+name: Discord Notifications
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, closed, reopened, merged]
+  issues:
+    types: [opened, edited, closed, reopened, deleted]
+  discussion:
+    types: [created, edited, closed, reopened, deleted]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send message to Discord
+        uses: Ilshidur/action-discord@v2
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            ${{ github.event_name | upper }} event in `${{ github.repository }}`
+
+            {% if github.event_name == 'push' %}
+            🚀 Push auf Branch `${{ github.ref_name }}`
+            Autor: `${{ github.actor }}`
+            Commits: 
+            {% for c in github.event.commits %}
+            - [`${{ c.id[:7] }}`](${{ c.url }}) ${{ c.message }}
+            {% endfor %}
+            {% elif github.event_name == 'pull_request' %}
+            PR #${{ github.event.number }} `${{ github.event.pull_request.title }}` wurde `${{ github.event.action }}`
+            {% elif github.event_name == 'issues' %}
+            Issue #${{ github.event.issue.number }} `${{ github.event.issue.title }}` wurde `${{ github.event.action }}`
+            {% elif github.event_name == 'discussion' %}
+            Discussion `${{ github.event.discussion.title }}` wurde `${{ github.event.action }}`
+            {% endif %}
